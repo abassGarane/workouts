@@ -13,7 +13,7 @@
 *.out
 
 # Dependency directories (remove the comment below to include it)
-bin/
+bin
 
 # Go workspace file
 go.work
