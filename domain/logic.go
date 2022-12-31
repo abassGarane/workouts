@@ -17,3 +17,7 @@ func (s *service) CreateWorkout(workout *Workout) (*Workout, error) {
 	workout.UpdatedAt = time.Now()
 	return s.repo.AddWorkout(workout)
 }
+
+func (s *service) GetWorkout(id string) (*Workout, error) {
+	return s.repo.GetWorkout(id)
+}

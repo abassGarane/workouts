@@ -11,7 +11,9 @@ func initRouter(s domain.Service) chi.Router {
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
 	router.Use(middleware.RequestID)
+	router.Use(middleware.Heartbeat("/ping"))
 	router.Use(middleware.AllowContentType("application/json"))
+	router.Use(middleware.SetHeader("Content-Type", "application/json"))
 
 	// personal middleware
 
@@ -21,14 +23,14 @@ func initRouter(s domain.Service) chi.Router {
 	h := NewHandler(s)
 	// Real system routes
 	router.Get("/health", h.health)
-	router.Get("/:id", h.getWorkout)
+	router.Get("/{id}", h.getWorkout)
 	router.Get("/", h.getWorkouts)
 
 	router.Post("/", h.createWorkout)
 
-	router.Delete("/:id", h.deleteWorkout)
+	router.Delete("/{id}", h.deleteWorkout)
 
-	router.Patch("/:id", h.updateWorkout)
+	router.Patch("/{id}", h.updateWorkout)
 
 	return router
 }
