@@ -19,24 +19,27 @@ type mongoRepository struct {
 }
 
 func newClient(mongoUrl string, ctx context.Context) (*mongo.Client, error) {
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(mongoUrl))
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(mongoUrl))
 	if err != nil {
 		return nil, err
 	}
 	if err = client.Ping(ctx, readpref.Primary()); err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err = client.Disconnect(ctx); err != nil {
-			log.Print("Unable to disconnect client", err)
-		}
-	}()
+	// defer func() {
+	// 	if err = client.Disconnect(ctx); err != nil {
+	// 		log.Print("Unable to disconnect client", err)
+	// 	}
+	// }()
 	return client, nil
 }
 func NewMongoRepository(mongoURL, database string, timeout int, ctx context.Context) (domain.Repository, error) {
 	client, err := newClient(mongoURL, ctx)
 	if err != nil {
 		return nil, err
+	}
+	if err := client.Ping(ctx, readpref.Primary()); err != nil {
+		log.Fatal(err)
 	}
 	repo := &mongoRepository{
 		client:   client,

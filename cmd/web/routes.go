@@ -1,11 +1,12 @@
 package main
 
 import (
+	"github.com/abassGarane/muscles/domain"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/chi/v5"
 )
 
-func initRouter() chi.Router {
+func initRouter(s domain.Service) chi.Router {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 	router.Use(middleware.Recoverer)
@@ -16,16 +17,18 @@ func initRouter() chi.Router {
 
 	router.Use(loggingMiddleware)
 
+	//create a handler
+	h := NewHandler(s)
 	// Real system routes
-	router.Get("/health", health)
-	router.Get("/:id", getWorkout)
-	router.Get("/", getWorkouts)
+	router.Get("/health", h.health)
+	router.Get("/:id", h.getWorkout)
+	router.Get("/", h.getWorkouts)
 
-	router.Post("/", createWorkout)
+	router.Post("/", h.createWorkout)
 
-	router.Delete("/:id", deleteWorkout)
+	router.Delete("/:id", h.deleteWorkout)
 
-	router.Patch("/:id", updateWorkout)
+	router.Patch("/:id", h.updateWorkout)
 
 	return router
 }

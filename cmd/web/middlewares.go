@@ -11,6 +11,6 @@ func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Calls += 1
 		fmt.Println(Calls)
-		next.ServeHTTP(w,r)
+		next.ServeHTTP(w, r)
 	})
 }

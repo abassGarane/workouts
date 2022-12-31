@@ -2,6 +2,7 @@ version: '3.7'
 services:
   mongodb_container:
     image: mongo:latest
+    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
