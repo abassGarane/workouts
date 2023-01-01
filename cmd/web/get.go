@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -16,12 +17,25 @@ func (h *handler) health(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) getWorkouts(w http.ResponseWriter, r *http.Request) {
+	workouts, err := h.service.GetWorkouts()
+	if err != nil {
+		http.Error(w, errors.Wrap(err, "Unable to retrieve workouts").Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(workouts)
+	if err != nil {
+		http.Error(w, errors.Wrap(err, "Unable to encode workouts").Error(), http.StatusInternalServerError)
+	}
 
 }
 func (h *handler) getWorkout(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
+	fmt.Println(id)
 	wkout, err := h.service.GetWorkout(id)
+	fmt.Println("Retrieved workout :: GetWorkout", wkout)
 	if err != nil {
+		fmt.Println(err)
 		http.Error(w, errors.Wrap(err, "Unable to retrieve workout").Error(), http.StatusInternalServerError)
 		return
 	}

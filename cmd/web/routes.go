@@ -23,8 +23,8 @@ func initRouter(s domain.Service) chi.Router {
 	h := NewHandler(s)
 	// Real system routes
 	router.Get("/health", h.health)
-	router.Get("/{id}", h.getWorkout)
 	router.Get("/", h.getWorkouts)
+	router.Get("/{id}", h.getWorkout)
 
 	router.Post("/", h.createWorkout)
 

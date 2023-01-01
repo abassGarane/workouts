@@ -9,7 +9,7 @@ clean:
 
 
 test:
-	go test -v -cover ./...
+	@go test -v -cover ./...
 
 up:
 	sudo docker-compose up -d

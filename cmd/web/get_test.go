@@ -11,7 +11,6 @@ import (
 
 	"github.com/abassGarane/muscles/domain"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestHealth(t *testing.T) {
@@ -33,40 +32,46 @@ func TestHealth(t *testing.T) {
 func TestGetWorkout(t *testing.T) {
 	// create a workout
 	workout := &domain.Workout{
-		ID:   primitive.NewObjectID(),
 		Type: "sprints",
 		Reps: 40,
 		Load: 30,
 	}
-	body, _ := json.Marshal(workout)
-	// require.NoError(t, err)
-	req, _ := http.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
+	body, err := json.Marshal(workout)
+	require.NoError(t, err)
+	req, err := http.NewRequest(http.MethodPost, "/", bytes.NewReader(body))
+	require.NoError(t, err)
 	req.Header.Set("Content-Type", "multipart/form-data")
 	w := httptest.NewRecorder()
 	hd.createWorkout(w, req)
 	result := w.Result()
 	defer result.Body.Close()
-	wkout := domain.Workout{}
-	_ = json.NewDecoder(result.Body).Decode(&wkout)
-	log.Print(wkout)
+	err = json.NewDecoder(result.Body).Decode(&workout)
+	log.Println("Returned workout", workout)
+	require.NoError(t, err)
 
 	//get that workout
-	req, _ = http.NewRequest(http.MethodGet, fmt.Sprintf("/%s", wkout.ID), nil)
+	url := fmt.Sprintf("/%s", workout.ID.Hex())
+	fmt.Println("url is ::", url)
+	req, _ = http.NewRequest(http.MethodGet, "/" + workout.ID.Hex(), nil)
 	req.Header.Set("Content-Type", "application/json")
-	w = httptest.NewRecorder()
-	w.Header().Set("Content-Type", "application/json")
-	hd.getWorkout(w, req)
-	res := w.Result()
+	w2 := httptest.NewRecorder()
+	w2.Header().Set("Content-Type", "application/json")
+	hd.getWorkout(w2, req)
+	res := w2.Result()
+	fmt.Println(res.Status)
 	require.Equal(t, res.StatusCode, http.StatusOK)
 	retrievedWorkout := domain.Workout{}
 	defer res.Body.Close()
-	err := json.NewDecoder(res.Body).Decode(&retrievedWorkout)
-	log.Print(retrievedWorkout)
+	err = json.NewDecoder(res.Body).Decode(&retrievedWorkout)
+	log.Printf("Retreived workout:: %#v", retrievedWorkout)
 	require.NoError(t, err)
 	require.NotEmpty(t, retrievedWorkout)
 	require.Equal(t, retrievedWorkout.Type, "sprints")
 	require.Equal(t, retrievedWorkout.Reps, 40)
 	require.Equal(t, retrievedWorkout.Load, 30)
 	require.NotEmpty(t, retrievedWorkout.ID)
+}
+
+func TestGetWorkouts(t *testing.T) {
 
 }

@@ -9,12 +9,10 @@ import (
 
 	"github.com/abassGarane/muscles/domain"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestPost(t *testing.T) {
 	workout := &domain.Workout{
-		ID:   primitive.NewObjectID(),
 		Type: "sprints",
 		Reps: 40,
 		Load: 30,

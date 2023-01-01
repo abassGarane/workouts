@@ -1,13 +1,12 @@
 package domain
 
 import (
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
 )
 
 type Workout struct {
-	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id"`
+	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Type      string             `json:"type" bson:"type,omitempty" validate:"required"`
 	Reps      int                `json:"reps,string" bson:"reps,omitempty" validate:"required"`
 	Load      int                `json:"load,string" bson:"load,omitempty" validate:"required"`

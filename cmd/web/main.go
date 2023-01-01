@@ -13,7 +13,7 @@ var (
 
 func main() {
 	env := initEnv()
-	PORT, _ := env["PORT"]
+	PORT:= env["PORT"]
 	repo := initDB()
 	service = domain.NewService(repo)
 	router := initRouter(service)
