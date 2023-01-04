@@ -1,46 +1,35 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 )
 
-func (h *handler) health(w http.ResponseWriter, r *http.Request) {
+func (h *handler) health(c echo.Context) error {
 	// w.Header().Set("Content-Type", "application/json") // for tests
-	if err := json.NewEncoder(w).Encode(map[string]string{"name": "Abass"}); err != nil {
-		http.Error(w, "Could not encode data", http.StatusInternalServerError)
-	}
+	return c.JSON(http.StatusOK, echo.Map{
+		"name": "abass",
+	})
 }
 
-func (h *handler) getWorkouts(w http.ResponseWriter, r *http.Request) {
+func (h *handler) getWorkouts(c echo.Context) error {
 	workouts, err := h.service.GetWorkouts()
 	if err != nil {
-		http.Error(w, errors.Wrap(err, "Unable to retrieve workouts").Error(), http.StatusInternalServerError)
-		return
+		return c.String(echo.ErrInternalServerError.Code, errors.Wrap(err, "Unable to retrieve workouts").Error())
 	}
-
-	err = json.NewEncoder(w).Encode(workouts)
-	if err != nil {
-		http.Error(w, errors.Wrap(err, "Unable to encode workouts").Error(), http.StatusInternalServerError)
-	}
-
+	return c.JSON(http.StatusOK, workouts)
 }
-func (h *handler) getWorkout(w http.ResponseWriter, r *http.Request) {
-	id := chi.URLParam(r, "id")
-	fmt.Println(id)
+
+func (h *handler) getWorkout(c echo.Context) error {
+	id := c.Param("id")
+	fmt.Println(c.ParamValues())
 	wkout, err := h.service.GetWorkout(id)
 	fmt.Println("Retrieved workout :: GetWorkout", wkout)
 	if err != nil {
-		fmt.Println(err)
-		http.Error(w, errors.Wrap(err, "Unable to retrieve workout").Error(), http.StatusInternalServerError)
-		return
+		return c.String(echo.ErrInternalServerError.Code, errors.Wrap(err, "Unable to retrieve workout").Error())
 	}
-	err = json.NewEncoder(w).Encode(wkout)
-	if err != nil {
-		http.Error(w, errors.Wrap(err, "Unable to encode workout").Error(), http.StatusInternalServerError)
-	}
+	return c.JSON(http.StatusOK, wkout)
 }

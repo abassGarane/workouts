@@ -7,6 +7,8 @@ run: build
 clean:
 	rm -rf ./bin
 
+# temp:
+# 	go run cmd/web/!(*_test).go
 
 test:
 	@go test -v -cover ./...

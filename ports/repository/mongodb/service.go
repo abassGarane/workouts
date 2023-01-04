@@ -17,10 +17,8 @@ func (m *mongoRepository) AddWorkout(workout *domain.Workout) (*domain.Workout, 
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
 	defer cancel()
 	coll := m.client.Database("muscles").Collection("workouts")
-	if workout.ID == primitive.NilObjectID {
-		if workout.ID = primitive.NewObjectID(); false {
-			return nil, errors.New("Unable to created new objectid")
-		}
+	if workout.ID = primitive.NewObjectID().Hex(); false {
+		return nil, errors.New("Unable to created new objectid")
 	}
 	_, err := coll.InsertOne(ctx, &workout)
 	if err != nil {
@@ -81,11 +79,17 @@ func (m *mongoRepository) GetWorkouts() ([]*domain.Workout, error) {
 
 func (m *mongoRepository) DeleteWorkout(id string) error {
 	objId, err := primitive.ObjectIDFromHex(id)
+	fmt.Println(objId)
 	if err != nil {
 		return errors.Wrap(err, "repo.DeleteWorkout")
 	}
 	col := m.client.Database("muscles").Collection("workouts")
+	existing := col.FindOne(context.Background(), bson.M{"_id": objId})
+	if existing == nil {
+		return errors.New("Document is not in the database")
+	}
 	res := col.FindOneAndDelete(context.Background(), bson.M{"_id": objId})
+	fmt.Println(res)
 	if res.Err() != nil {
 		return errors.New("Unable to delete workout")
 	}
@@ -94,7 +98,7 @@ func (m *mongoRepository) DeleteWorkout(id string) error {
 
 func (m *mongoRepository) UpdateWorkout(id string, workout *domain.Workout) (*domain.Workout, error) {
 	var updatedWorkout *domain.Workout
-	
+
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, errors.Wrap(err, "repo.DeleteWorkout")
@@ -105,15 +109,14 @@ func (m *mongoRepository) UpdateWorkout(id string, workout *domain.Workout) (*do
 	// 	//TODO : Save workout as a new workout
 	// 	return nil, errors.Wrap(err, "Workout doesnt exist")
 	// }
-	_, err = col.ReplaceOne(context.Background(), bson.M{"_id": objId},workout)
+	_, err = col.ReplaceOne(context.Background(), bson.M{"_id": objId}, workout)
 	// replace old workout with new workout
-	if  err != nil{
+	if err != nil {
 		return nil, errors.Wrap(err, "Workout doesnt exist")
-	}	
+	}
 	updatedWorkout = workout
-	updatedWorkout.ID = objId
-	
-	
+	updatedWorkout.ID = objId.Hex()
+
 	fmt.Println("updated object", updatedWorkout)
 	return updatedWorkout, nil
 }

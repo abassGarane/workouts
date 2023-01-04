@@ -1,31 +1,24 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/abassGarane/muscles/domain"
-	"github.com/go-chi/chi/v5"
+	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
 )
 
-func (h *handler) updateWorkout(w http.ResponseWriter, r *http.Request) {
+func (h *handler) updateWorkout(c echo.Context) error {
 	var workout domain.Workout
 
-	err := json.NewDecoder(r.Body).Decode(&workout)
-	if err != nil {
-		http.Error(w, fmt.Errorf("could not decode the request body %v", err).Error(), http.StatusInternalServerError)
-		return
+	// err := json.NewDecoder(c.Request().Body).Decode(&workout)
+	if err := echo.New().JSONSerializer.Deserialize(c, &workout); err != nil {
+		return c.String(echo.ErrInternalServerError.Code, errors.Wrap(err, "Unable to decode workout").Error())
 	}
-	id := chi.URLParam(r, "id")
-	defer r.Body.Close()
+	id := c.Param("id")
 	returnedWorkout, err := h.service.UpdateWorkout(id, &workout)
 	if err != nil {
-		http.Error(w, fmt.Errorf("could not decode the request body %v", err).Error(), http.StatusInternalServerError)
-		return
+		return c.String(echo.ErrInternalServerError.Code, errors.Wrap(err, "Unable to decode workout").Error())
 	}
-	if err = json.NewEncoder(w).Encode(returnedWorkout); err != nil {
-		http.Error(w, fmt.Errorf("could not decode the request body %v", err).Error(), http.StatusInternalServerError)
-		return
-	}
+	return c.JSON(http.StatusOK, returnedWorkout)
 }
