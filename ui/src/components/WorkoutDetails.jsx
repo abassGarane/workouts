@@ -1,10 +1,17 @@
 import React from "react";
+import { UseWorkoutsContext } from "../hooks/useWorkoutsContext";
 
 const WorkoutDetails = ({ workout }) => {
+
+  const { dispatch } = UseWorkoutsContext()
   const handleDelete = async () => {
-    const res = await fetch(`api/${workout.id}/`, { method: "DELETE" })
+    const res = await fetch(`api/${workout.id}`, { method: "DELETE" })
     if (!res.ok) {
+      console.log(res)
       alert("unable to delete workout")
+    }
+    if (res.ok) {
+      dispatch({ type: "DELETE_WORKOUT", payload: workout })
     }
   }
   return (

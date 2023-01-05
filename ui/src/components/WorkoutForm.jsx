@@ -58,6 +58,7 @@ const WorkoutForm = () => {
         onChange={(e) => setLoad(e.target.value)}
         value={load}
         required
+        min={0}
       />
       <label>Reps : </label>
       <input
@@ -65,6 +66,7 @@ const WorkoutForm = () => {
         onChange={(e) => setReps(e.target.value)}
         value={reps}
         required
+        min={0}
       />
       <button type="submit">Add Workout</button>
       {error && <div className="error">{error}</div>}

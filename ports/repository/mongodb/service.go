@@ -11,16 +11,16 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func (m *mongoRepository) AddWorkout(workout *domain.Workout) (*domain.Workout, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
 	defer cancel()
-	coll := m.client.Database("muscles").Collection("workouts")
-	if workout.ID = primitive.NewObjectID().Hex(); false {
+	if workout.ID = primitive.NewObjectID(); false {
 		return nil, errors.New("Unable to created new objectid")
 	}
-	_, err := coll.InsertOne(ctx, &workout)
+	_, err := m.col.InsertOne(ctx, &workout)
 	if err != nil {
 		return nil, errors.Wrap(err, "mongo.Repository.addWorkout")
 	}
@@ -28,41 +28,47 @@ func (m *mongoRepository) AddWorkout(workout *domain.Workout) (*domain.Workout, 
 }
 
 func (m *mongoRepository) GetWorkout(id string) (*domain.Workout, error) {
-	workout := &domain.Workout{}
-	if id == "" {
-		return nil, errors.New("id is empty")
-	}
+	workout := domain.Workout{}
+	if primitive.IsValidObjectID(id) {
+		objID, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			if err == primitive.ErrInvalidHex {
+				return nil, errors.Wrap(err, "Invalid id type")
+			} else if objID == primitive.NilObjectID || !primitive.IsValidObjectID(id) {
+				return nil, errors.New("Unable to create new objectid")
+			}
+		}
+		if objID.IsZero() {
+			return nil, errors.New("id can not be empty :: repo.mongoRepository.GetWorkout")
+		}
+		fmt.Println(objID, err)
+		ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
+		defer cancel()
+		fmt.Printf("mongo result :: %#v", m.col.FindOne(ctx, bson.M{"_id": objID}))
+		res := m.col.FindOne(ctx, bson.M{"_id": objID})
+		if res.Err() == mongo.ErrNoDocuments {
+			return nil, errors.Wrap(err, "No documents with that id in the repo")
+		}
+		fmt.Printf("Retrieved workout %#v\n", workout)
+		err = res.Decode(&workout)
+		if err != nil {
+			return nil, errors.Wrap(err, "repo.mongoRepository.GetWorkout")
+		}
+		log.Println(workout)
+		return &workout, nil
 
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		if err == primitive.ErrInvalidHex {
-			return nil, errors.Wrap(err, "Invalid id type")
-		}
-		if objID == primitive.NilObjectID || !primitive.IsValidObjectID(id) {
-			return nil, errors.New("Unable to created new objectid")
-		}
 	}
-	fmt.Println(objID, err)
-	if err != nil {
-		return nil, errors.Wrap(err, "repo.mongoRepository.GetWorkout")
-	}
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
-	defer cancel()
-	coll := m.client.Database("muscles").Collection("workouts")
-	err = coll.FindOne(ctx, bson.M{"_id": objID}).Decode(&workout)
-	if err != nil {
-		return nil, errors.Wrap(err, "repo.mongoRepository.GetWorkout")
-	}
-	log.Println(workout)
-	return workout, nil
+	// check if objectID is empty
+
+	return nil, errors.New("Invalid hex type")
 }
 
 func (m *mongoRepository) GetWorkouts() ([]*domain.Workout, error) {
 	workouts := []*domain.Workout{}
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
 	defer cancel()
-	coll := m.client.Database("muscles").Collection("workouts")
-	cursor, err := coll.Find(ctx, bson.M{})
+	opts := options.Find().SetSort(bson.M{"created_at": -1})
+	cursor, err := m.col.Find(ctx, bson.M{}, opts)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.Wrap(err, "repo.mongoRepository.GetWorkout :: No document found")
@@ -82,12 +88,11 @@ func (m *mongoRepository) DeleteWorkout(id string) error {
 	if err != nil {
 		return errors.Wrap(err, "repo.DeleteWorkout")
 	}
-	col := m.client.Database("muscles").Collection("workouts")
-	existing := col.FindOne(context.Background(), bson.M{"_id": objId})
+	existing := m.col.FindOne(context.Background(), bson.M{"_id": objId})
 	if existing == nil {
 		return errors.New("Document is not in the database")
 	}
-	res := col.FindOneAndDelete(context.Background(), bson.M{"_id": objId})
+	res := m.col.FindOneAndDelete(context.Background(), bson.M{"_id": objId})
 	fmt.Println(res)
 	if res.Err() != nil {
 		return errors.New("Unable to delete workout")
@@ -100,21 +105,20 @@ func (m *mongoRepository) UpdateWorkout(id string, workout *domain.Workout) (*do
 
 	objId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, errors.Wrap(err, "repo.DeleteWorkout")
+		return nil, errors.Wrap(err, "repo.UpdateWorkout")
 	}
-	col := m.client.Database("muscles").Collection("workouts")
 	// //retrieve old workout
 	// if err = col.FindOne(context.Background(), bson.M{"_id":objId}).Decode(&oldWorkout); err != nil{
 	// 	//TODO : Save workout as a new workout
 	// 	return nil, errors.Wrap(err, "Workout doesnt exist")
 	// }
-	_, err = col.ReplaceOne(context.Background(), bson.M{"_id": objId}, workout)
+	_, err = m.col.ReplaceOne(context.Background(), bson.M{"_id": objId}, workout)
 	// replace old workout with new workout
 	if err != nil {
 		return nil, errors.Wrap(err, "Workout doesnt exist")
 	}
 	updatedWorkout = workout
-	updatedWorkout.ID = objId.Hex()
+	updatedWorkout.ID = objId
 
 	fmt.Println("updated object", updatedWorkout)
 	return updatedWorkout, nil

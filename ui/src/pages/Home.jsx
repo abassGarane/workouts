@@ -13,6 +13,7 @@ const Home = () => {
       if (res.ok) {
         console.log(json);
         // setWorkouts(json);
+        console.log(json)
         dispatch({ type: "SET_WORKOUTS", payload: json })
       }
     };

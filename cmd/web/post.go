@@ -16,7 +16,9 @@ func (h *handler) createWorkout(c echo.Context) error {
 	// err := json.NewDecoder(c.Request().Body).Decode(&workout)
 	err := echo.New().JSONSerializer.Deserialize(c, &workout)
 	c.Logger().Debug(workout)
-
+	if err := domain.Validate(&workout); err != nil {
+		return c.JSON(echo.ErrBadRequest.Code, err.Error())
+	}
 	if err != nil {
 		return c.String(echo.ErrBadRequest.Code, errors.Wrap(err, fmt.Errorf("could not decode the request body %v", err).Error()).Error())
 	}

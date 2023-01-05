@@ -1,12 +1,19 @@
+.PHONY: ui
+ui:
+	cd ui/ && \
+		npm run build
+
 build:
 	@go build -o bin/muscles -ldflags "-w -s" cmd/web/*
 
-run: build
+run:  build
 	./bin/muscles
 
 clean:
 	rm -rf ./bin
+	rm -rf ./ui/public/
 
+all: ui run 
 # temp:
 # 	go run cmd/web/!(*_test).go
 

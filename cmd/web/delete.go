@@ -9,7 +9,10 @@ import (
 
 func (h *handler) deleteWorkout(c echo.Context) error {
 	id := c.Param("id")
-	err = h.service.DeleteWorkout(id)
+	if string(id) == "" {
+		return c.String(echo.ErrInternalServerError.Code, errors.New("no workout id in params").Error())
+	}
+	err := h.service.DeleteWorkout(id)
 	if err != nil {
 		return c.String(echo.ErrInternalServerError.Code, errors.Wrap(err, "Unable to delete workout").Error())
 	}

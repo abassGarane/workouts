@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"log"
 	"time"
 )
 
@@ -13,8 +14,12 @@ func NewService(repo Repository) Service {
 }
 
 func (s *service) CreateWorkout(workout *Workout) (*Workout, error) {
-	workout.CreatedAt = time.Now().Local()
-	workout.UpdatedAt = time.Now().Local()
+	nai, err := time.LoadLocation("Africa/Nairobi")
+	if err != nil {
+		log.Fatal(err)
+	}
+	workout.CreatedAt = time.Now().UTC().Local().In(nai)
+	workout.UpdatedAt = time.Now().UTC().Local().In(nai)
 	return s.repo.AddWorkout(workout)
 }
 
@@ -30,5 +35,6 @@ func (s *service) DeleteWorkout(id string) error {
 }
 
 func (s *service) UpdateWorkout(id string, workout *Workout) (*Workout, error) {
+	workout.UpdatedAt = time.Now().UTC().Local()
 	return s.repo.UpdateWorkout(id, workout)
 }

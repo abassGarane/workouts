@@ -12,10 +12,11 @@ import (
 )
 
 type mongoRepository struct {
-	client   *mongo.Client
+	// client   *mongo.Client
 	timeout  time.Duration
 	database string
 	ctx      context.Context
+	col      *mongo.Collection
 }
 
 func newClient(mongoUrl string, ctx context.Context) (*mongo.Client, error) {
@@ -42,8 +43,8 @@ func NewMongoRepository(mongoURL, database string, timeout int, ctx context.Cont
 		log.Fatal(err)
 	}
 	repo := &mongoRepository{
-		client:   client,
 		database: database,
+		col:      client.Database("muscles").Collection("workouts"),
 		ctx:      ctx,
 		timeout:  time.Duration(timeout) * time.Second,
 	}
