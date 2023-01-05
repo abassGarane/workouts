@@ -2,7 +2,6 @@ import React from "react";
 import { UseWorkoutsContext } from "../hooks/useWorkoutsContext";
 
 const WorkoutDetails = ({ workout }) => {
-
   const { dispatch } = UseWorkoutsContext()
   const handleDelete = async () => {
     const res = await fetch(`api/${workout.id}`, { method: "DELETE" })

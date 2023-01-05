@@ -11,7 +11,7 @@ import (
 func (h *handler) health(c echo.Context) error {
 	// w.Header().Set("Content-Type", "application/json") // for tests
 	return c.JSON(http.StatusOK, echo.Map{
-		"name": "abass",
+		"status": "running...",
 	})
 }
 

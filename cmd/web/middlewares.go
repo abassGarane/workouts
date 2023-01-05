@@ -2,16 +2,20 @@ package main
 
 import (
 	"fmt"
-	"net/http"
+
+	"github.com/labstack/echo/v4"
 )
 
 var Calls int64
 
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
+func loggingMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		c.Request().Header.Set("Content-Type", "application/json")
 		Calls += 1
-		fmt.Println(Calls)
-		next.ServeHTTP(w, r)
-	})
+		fmt.Println("You have access")
+		if err := next(c); err != nil {
+			c.Error(err)
+		}
+		return nil
+	}
 }

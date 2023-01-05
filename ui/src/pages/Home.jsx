@@ -8,7 +8,7 @@ const Home = () => {
   const { workouts, dispatch } = UseWorkoutsContext()
   useEffect(() => {
     const fetchWorkouts = async () => {
-      const res = await fetch("/api/");
+      const res = await fetch("/api");
       const json = await res.json();
       if (res.ok) {
         console.log(json);
