@@ -20,7 +20,6 @@ func initRouter(s domain.Service, apiRouter *echo.Group) {
 
 	apiRouter.PATCH("/:id", h.updateWorkout)
 
-	// router.Mount("/api", apiRouter)
 }
 
 // func initRouter(s domain.Service) chi.Router {

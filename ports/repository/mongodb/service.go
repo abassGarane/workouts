@@ -79,7 +79,6 @@ func (m *mongoRepository) GetWorkouts() ([]*domain.Workout, error) {
 
 func (m *mongoRepository) DeleteWorkout(id string) error {
 	objId, err := primitive.ObjectIDFromHex(id)
-	fmt.Println(objId)
 	if err != nil {
 		return errors.Wrap(err, "repo.DeleteWorkout")
 	}
