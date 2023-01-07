@@ -1,5 +1,8 @@
+import TimeAgo from "javascript-time-ago";
+import en from 'javascript-time-ago/locale/en'
 import React from "react";
 import { UseWorkoutsContext } from "../hooks/useWorkoutsContext";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const WorkoutDetails = ({ workout }) => {
   const { dispatch } = UseWorkoutsContext()
@@ -13,6 +16,9 @@ const WorkoutDetails = ({ workout }) => {
       dispatch({ type: "DELETE_WORKOUT", payload: workout })
     }
   }
+  TimeAgo.addDefaultLocale(en)
+  let timeAgo = new TimeAgo("en-US")
+  let formatedDate = timeAgo.format(new Date(workout.created_at))
   return (
     <div className="workout_details">
       <h4>{workout.type}</h4>
@@ -24,8 +30,8 @@ const WorkoutDetails = ({ workout }) => {
         <strong>Reps :</strong>
         {workout.reps}
       </p>
-      <p>{workout.created_at}</p>
-      <span onClick={handleDelete}>delete</span>
+      <p>{formatedDate}</p>
+      <span onClick={handleDelete}><DeleteIcon /></span>
     </div>
   );
 };

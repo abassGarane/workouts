@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	"github.com/abassGarane/muscles/pkg/passwords"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -11,20 +13,17 @@ type User struct {
 	Name           string             `json:"name,omitempty" bson:"name,omitempty" validate:"required"`
 	Email          string             `json:"email" bson:"email" validate:"required,email"`
 	HashedPassword string             `json:"hashed_password" bson:"hashed_password,omitempty" validate:"required"`
-	HomeAddress    *Address           `json:"home_address" bson:"home_address" validate:"required"`
+	Admin          bool               `json:"admin" bson:"admin" validate:"-"`
+	CreatedAt      time.Time          `json:"created_at" bson:"created_at,omitempty" `
+	UpdatedAt      time.Time          `json:"updated_at" bson:"updated_at,omitempty"`
 }
 
-func NewUser(name, email, password, county, town, village string) *User {
+func NewUser(name, email, password string) *User {
 	pass, _ := passwords.CreateHashedPassword(password)
 	return &User{
 		Name:           name,
 		Email:          email,
 		HashedPassword: pass,
-		HomeAddress: &Address{
-			HomeCounty:  county,
-			HomeTown:    town,
-			HomeVillage: village,
-		},
 	}
 }
 func (s *User) Validate() error {

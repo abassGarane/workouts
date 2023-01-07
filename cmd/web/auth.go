@@ -2,45 +2,35 @@ package main
 
 import (
 	"net/http"
-	"time"
 
 	"github.com/abassGarane/muscles/domain"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/google/uuid"
+	"github.com/abassGarane/muscles/domain/models"
+	"github.com/abassGarane/muscles/pkg/passwords"
 	"github.com/labstack/echo/v4"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-const secret = "aiahihsojaojdaykdxdAYFD8IQU23RWEDFVASUJHXAYUAFT7"
-
 type AuthHandler struct {
-	service domain.Service
+	s domain.Service
 }
 
 func NewAuthHandler(s domain.Service) *AuthHandler {
 	return &AuthHandler{s}
-
 }
 
 func (a *AuthHandler) login(c echo.Context) error {
+	var user = &models.User{}
+	user.ID = primitive.NewObjectID()
 	username := c.FormValue("username")
 	password := c.FormValue("password")
-	if username == "" || password == "" {
-		return echo.ErrUnauthorized
-	}
-	claims := &Claim{
-		Name:  username,
-		ID:    uuid.NewString(),
-		Admin: false,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte(secret))
-	if err != nil {
-		return echo.ErrInternalServerError
-	}
-	return c.JSON(http.StatusOK, map[string]string{
-		"token": t,
-	})
+	email := c.FormValue("email")
+	hashed, _ := passwords.CreateHashedPassword(password)
+	user.Name = username
+	user.HashedPassword = hashed
+	user.Admin = false
+	user.Email = email
+	return c.JSON(http.StatusOK, echo.Map{"user": user})
+}
+func (a *AuthHandler) signup(c echo.Context) error {
+	return c.JSON(http.StatusOK, echo.Map{"message": "signup"})
 }

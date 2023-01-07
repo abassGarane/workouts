@@ -52,7 +52,7 @@ func TestGetWorkout(t *testing.T) {
 	//get that workout
 	url := fmt.Sprintf("/%s", workout.ID.Hex())
 	fmt.Println("url is ::", url)
-	req, _ = http.NewRequest(http.MethodGet, "/" + workout.ID.Hex(), nil)
+	req, _ = http.NewRequest(http.MethodGet, "/"+workout.ID.Hex(), nil)
 	req.Header.Set("Content-Type", "application/json")
 	w2 := httptest.NewRecorder()
 	w2.Header().Set("Content-Type", "application/json")

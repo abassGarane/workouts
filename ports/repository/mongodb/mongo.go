@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/abassGarane/muscles/domain"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -17,6 +18,7 @@ type mongoRepository struct {
 	database string
 	ctx      context.Context
 	col      *mongo.Collection
+	usersCol *mongo.Collection
 }
 
 func newClient(mongoUrl string, ctx context.Context) (*mongo.Client, error) {
@@ -47,6 +49,14 @@ func NewMongoRepository(mongoURL, database string, timeout int, ctx context.Cont
 		col:      client.Database("muscles").Collection("workouts"),
 		ctx:      ctx,
 		timeout:  time.Duration(timeout) * time.Second,
+		usersCol: client.Database("muscles").Collection("users"),
 	}
+	repo.usersCol.Indexes().CreateOne(
+		context.Background(),
+		mongo.IndexModel{
+			Keys:    bson.M{"email": 1},
+			Options: options.Index().SetUnique(true),
+		},
+	)
 	return repo, nil
 }
