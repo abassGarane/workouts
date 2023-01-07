@@ -17,7 +17,8 @@ type Workout struct {
 }
 
 // TODO: implement validate for presence of all fields in struct
-func Validate(w *Workout) error {
+// TODO: Add generics to handle different structs
+func Validate[S any](w S) error {
 	val := validator.New()
 	return val.Struct(w)
 }
