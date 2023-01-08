@@ -14,11 +14,11 @@ import (
 
 type mongoRepository struct {
 	// client   *mongo.Client
-	timeout  time.Duration
-	database string
-	ctx      context.Context
-	col      *mongo.Collection
-	usersCol *mongo.Collection
+	timeout     time.Duration
+	database    string
+	ctx         context.Context
+	workoutsCol *mongo.Collection
+	usersCol    *mongo.Collection
 }
 
 func newClient(mongoUrl string, ctx context.Context) (*mongo.Client, error) {
@@ -29,11 +29,6 @@ func newClient(mongoUrl string, ctx context.Context) (*mongo.Client, error) {
 	if err = client.Ping(ctx, readpref.Primary()); err != nil {
 		return nil, err
 	}
-	// defer func() {
-	// 	if err = client.Disconnect(ctx); err != nil {
-	// 		log.Print("Unable to disconnect client", err)
-	// 	}
-	// }()
 	return client, nil
 }
 func NewMongoRepository(mongoURL, database string, timeout int, ctx context.Context) (domain.Repository, error) {
