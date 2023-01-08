@@ -3,13 +3,16 @@ package domain
 import (
 	"log"
 	"time"
+
+	"github.com/abassGarane/muscles/domain/models"
+	"github.com/abassGarane/muscles/pkg/passwords"
 )
 
 type service struct {
 	repo Repository
 }
 
-func NewService(repo Repository) Service {
+func Newservice(repo Repository) Service {
 	return &service{repo}
 }
 
@@ -37,4 +40,18 @@ func (s *service) DeleteWorkout(id string) error {
 func (s *service) UpdateWorkout(id string, workout *Workout) (*Workout, error) {
 	workout.UpdatedAt = time.Now().UTC().Local()
 	return s.repo.UpdateWorkout(id, workout)
+}
+
+func (s *service) GetUserByEmail(email string) (*models.User, error) {
+	return s.repo.GetUserByEmail(email)
+}
+
+func (s *service) CreateUser(userR *models.UserRequest) (*models.User, error) {
+	pass, _ := passwords.CreateHashedPassword(userR.Password)
+	var user = &models.User{}
+	user.HashedPassword = pass
+	return s.repo.CreateUser(user)
+}
+func (s *service) UpdateUser(email string, user *models.User) (*models.User, error) {
+	return s.repo.UpdateUser(email, user)
 }
