@@ -29,6 +29,7 @@ func (a *AuthHandler) login(c echo.Context) error {
 		}
 		return c.JSON(http.StatusOK, echo.Map{"message": err})
 	}
+	fmt.Println("Login request::", l)
 	user, err := a.s.GetUserByEmail(l.Email)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "User does not exist"})
