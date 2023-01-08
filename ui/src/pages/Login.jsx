@@ -1,22 +1,15 @@
 import React, { useState } from 'react'
+import { useLogin } from '../hooks/useLogin'
 
 const Login = () => {
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
+  const { login, error, loading } = useLogin()
 
   const createUser = async (e) => {
     e.preventDefault()
-    let user = {
-      email,
-      password,
-    }
-    console.log(user)
-    // const res = await fetch("/auth/login", {
-    //   method: "POST",
-    //   body: JSON.stringify(user),
-    // })
-    // const data = await res.json()
-    // console.log(data)
+
+    await login(email, password)
   }
   return (
     <form className='login' onSubmit={createUser}>
@@ -25,7 +18,8 @@ const Login = () => {
       <input type="email" name="email" value={email} onChange={e => setEmail(e.target.value)} />
       <label >Password:</label>
       <input type="password" name="password" value={password} onChange={e => setPassword(e.target.value)} />
-      <button type="submit">Log in</button>
+      <button type="submit" disabled={loading}>Log in</button>
+      {error && <div className="error">{error}</div>}
     </form>
   )
 }

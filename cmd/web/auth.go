@@ -49,6 +49,7 @@ func (a *AuthHandler) login(c echo.Context) error {
 	token := j.CreateSignature(claims, "the world is a beautiful place")
 	return c.JSON(200, echo.Map{
 		"token": token,
+		"user":  user,
 	})
 }
 func (a *AuthHandler) signup(c echo.Context) error {

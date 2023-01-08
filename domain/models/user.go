@@ -12,8 +12,8 @@ type User struct {
 	ID             primitive.ObjectID `json:"id,string" bson:"_id,omitempty"`
 	Name           string             `json:"name,omitempty" bson:"name,omitempty" validate:"required"`
 	Email          string             `json:"email" bson:"email" validate:"required,email"`
-	HashedPassword string             `json:"hashed_password" bson:"hashed_password,omitempty" validate:"required"`
-	Admin          bool               `json:"admin" bson:"admin" validate:"-"`
+	HashedPassword string             `json:"-" bson:"hashed_password,omitempty" validate:"required"`
+	Admin          bool               `json:"admin,omitempty" bson:"admin" validate:"-"`
 	CreatedAt      time.Time          `json:"created_at" bson:"created_at,omitempty" `
 	UpdatedAt      time.Time          `json:"updated_at" bson:"updated_at,omitempty"`
 }
