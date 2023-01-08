@@ -73,13 +73,18 @@ header a {
 
 .workout_details span {
   position: absolute;
-  top: 20px;
+  top: 50%;
   right: 20px;
+  bottom:50%;
+  transform:translate(-50%, -50%);
   cursor: pointer;
   background-color: #f1f1f1;
   padding: 6px;
   border-radius: 50%;
   color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 label, input{
   display:block;
@@ -111,4 +116,34 @@ div.error{
   border-radius: 4px;
   font-weight: 600;
   margin: 20px 0;
+}
+
+nav{
+  display: flex;
+  align-items: center;
+}
+
+nav a {
+  margin-left: 10px;
+}
+
+form.signup, form.login{
+  max-width: 400px;
+  margin:40px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 4px;
+}
+
+nav button{
+  background: #fff;
+  color:var(--primary);
+  boder: 2px solid var(--primary);
+  padding:6px 10px;
+  border-radius:4px;
+  cursor: pointer;
+  font-family: inherit;
+}
+span svg{
+  color:var(--error);
 }
