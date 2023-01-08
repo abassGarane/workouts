@@ -57,7 +57,6 @@ const WorkoutForm = () => {
         type="number"
         onChange={(e) => setLoad(e.target.value)}
         value={load}
-        required
         min={0}
       />
       <label>Reps : </label>
