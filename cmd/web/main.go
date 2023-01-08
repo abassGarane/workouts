@@ -16,7 +16,7 @@ func main() {
 	PORT := env["PORT"]
 
 	repo := initDB()
-	service = domain.NewService(repo)
+	service = domain.Newservice(repo)
 
 	e := echo.New()
 

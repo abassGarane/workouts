@@ -123,14 +123,12 @@ func (m *mongoRepository) UpdateWorkout(id string, workout *domain.Workout) (*do
 func (m *mongoRepository) CreateUser(user *models.User) (*models.User, error) {
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
 	defer cancel()
-	if user.ID = primitive.NewObjectID(); false {
-		return nil, errors.New("Unable to created new objectid")
-	}
-	//check if user exists
 	res := m.usersCol.FindOne(ctx, bson.M{"email": user.Email})
-	if res.Err() == nil {
+	if res.Err() != mongo.ErrNoDocuments {
 		return nil, errors.Wrap(res.Err(), "repo.Create user"+"User exists already")
 	}
+
+	user.ID = primitive.NewObjectID()
 	_, err := m.usersCol.InsertOne(ctx, &user)
 	if err != nil {
 		return nil, errors.Wrap(err, "mongo.Repository.addWorkout")
@@ -151,15 +149,13 @@ func (m *mongoRepository) UpdateUser(email string, user *models.User) (*models.U
 
 }
 func (m *mongoRepository) GetUserByEmail(email string) (*models.User, error) {
-	var user *models.User
+	var user = &models.User{}
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
 	defer cancel()
-	if user.ID = primitive.NewObjectID(); false {
-		return nil, errors.New("Unable to created new objectid")
-	}
+
 	//check if user exists
 	res := m.usersCol.FindOne(ctx, bson.M{"email": email})
-	if err := res.Decode(&user); err != nil {
+	if err := res.Decode(user); err != nil {
 		return nil, errors.Wrap(res.Err(), "repo.GetUserByEmail user"+"Could not find user")
 	}
 	return user, nil

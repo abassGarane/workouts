@@ -40,11 +40,11 @@ func NewMongoRepository(mongoURL, database string, timeout int, ctx context.Cont
 		log.Fatal(err)
 	}
 	repo := &mongoRepository{
-		database: database,
-		col:      client.Database("muscles").Collection("workouts"),
-		ctx:      ctx,
-		timeout:  time.Duration(timeout) * time.Second,
-		usersCol: client.Database("muscles").Collection("users"),
+		database:    database,
+		workoutsCol: client.Database("muscles").Collection("workouts"),
+		ctx:         ctx,
+		timeout:     time.Duration(timeout) * time.Second,
+		usersCol:    client.Database("muscles").Collection("users"),
 	}
 	repo.usersCol.Indexes().CreateOne(
 		context.Background(),

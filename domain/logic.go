@@ -6,6 +6,7 @@ import (
 
 	"github.com/abassGarane/muscles/domain/models"
 	"github.com/abassGarane/muscles/pkg/passwords"
+	"github.com/pkg/errors"
 )
 
 type service struct {
@@ -35,6 +36,7 @@ func (s *service) GetWorkouts() ([]*Workout, error) {
 }
 func (s *service) DeleteWorkout(id string) error {
 	return s.repo.DeleteWorkout(id)
+
 }
 
 func (s *service) UpdateWorkout(id string, workout *Workout) (*Workout, error) {
@@ -47,9 +49,14 @@ func (s *service) GetUserByEmail(email string) (*models.User, error) {
 }
 
 func (s *service) CreateUser(userR *models.UserRequest) (*models.User, error) {
-	pass, _ := passwords.CreateHashedPassword(userR.Password)
+	pass, err := passwords.CreateHashedPassword(userR.Password)
+	if err != nil {
+		return nil, errors.Wrap(err, "service.logic.CreateUser")
+	}
 	var user = &models.User{}
 	user.HashedPassword = pass
+	user.Email = userR.Email
+	user.Name = userR.Name
 	return s.repo.CreateUser(user)
 }
 func (s *service) UpdateUser(email string, user *models.User) (*models.User, error) {
