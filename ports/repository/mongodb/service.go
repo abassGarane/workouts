@@ -63,12 +63,12 @@ func (m *mongoRepository) GetWorkout(id string) (*domain.Workout, error) {
 	return nil, errors.New("Invalid hex type")
 }
 
-func (m *mongoRepository) GetWorkouts() ([]*domain.Workout, error) {
+func (m *mongoRepository) GetWorkouts(user_email string) ([]*domain.Workout, error) {
 	workouts := []*domain.Workout{}
 	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(time.Second*10))
 	defer cancel()
 	opts := options.Find().SetSort(bson.M{"created_at": -1})
-	cursor, err := m.workoutsCol.Find(ctx, bson.M{}, opts)
+	cursor, err := m.workoutsCol.Find(ctx, bson.M{"user_email": user_email}, opts)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			return nil, errors.Wrap(err, "repo.mongoRepository.GetWorkout :: No document found")
