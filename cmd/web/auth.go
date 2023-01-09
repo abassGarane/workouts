@@ -39,14 +39,14 @@ func (a *AuthHandler) login(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": "Wrong password"})
 	}
-	claims := j.Claim{
+	claims := &j.Claim{
 		Email:    user.Email,
 		Username: user.Name,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24 * 30)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		},
 	}
-	token := j.CreateSignature(claims, "the world is a beautiful place")
+	token := j.CreateSignature(claims, "jhkafS8AsrFVSAZXFAAG")
 	return c.JSON(200, echo.Map{
 		"token": token,
 		"user":  user,
@@ -75,7 +75,7 @@ func (a *AuthHandler) signup(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, echo.Map{"message": fmt.Sprintf("Could not create user %v", err)})
 	}
 	fmt.Println(createdUser.Email)
-	claims := j.Claim{
+	claims := &j.Claim{
 		Username: createdUser.Name,
 		Email:    createdUser.Email,
 		Admin:    false,

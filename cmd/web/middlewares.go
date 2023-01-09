@@ -1,8 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
+	j "github.com/abassGarane/muscles/pkg/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,4 +21,17 @@ func loggingMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		return nil
 	}
+}
+
+func isAuthenticated(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		user := c.Get("user").(*jwt.Token)
+		claims := user.Claims.(*j.Claim)
+		if claims.Valid() == nil {
+			c.Request().WithContext(context.WithValue(c.Request().Context(), "user_email", claims.Email))
+			next(c)
+		}
+		return echo.ErrUnauthorized
+	}
+
 }

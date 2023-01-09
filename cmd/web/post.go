@@ -6,15 +6,19 @@ import (
 	"net/http"
 
 	"github.com/abassGarane/muscles/domain"
+	j "github.com/abassGarane/muscles/pkg/jwt"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 )
 
 func (h *handler) createWorkout(c echo.Context) error {
 	var workout domain.Workout
+	user := c.Get("user").(*jwt.Token)
+	claims := user.Claims.(*j.Claim)
 
-	// err := json.NewDecoder(c.Request().Body).Decode(&workout)
-	err := echo.New().JSONSerializer.Deserialize(c, &workout)
+	err := c.Bind(&workout)
+	workout.UserEmail = claims.Email
 	c.Logger().Debug(workout)
 	if err := domain.Validate(&workout); err != nil {
 		return c.JSON(echo.ErrBadRequest.Code, err.Error())
