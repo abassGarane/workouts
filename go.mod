@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/go-playground/validator/v10 v10.11.1
 	github.com/golang-jwt/jwt/v4 v4.4.3
+	github.com/labstack/echo-jwt/v4 v4.0.0
 	github.com/labstack/echo/v4 v4.10.0
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.1
