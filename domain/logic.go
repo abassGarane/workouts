@@ -31,8 +31,8 @@ func (s *service) GetWorkout(id string) (*Workout, error) {
 	return s.repo.GetWorkout(id)
 }
 
-func (s *service) GetWorkouts() ([]*Workout, error) {
-	return s.repo.GetWorkouts()
+func (s *service) GetWorkouts(user_email string) ([]*Workout, error) {
+	return s.repo.GetWorkouts(user_email)
 }
 func (s *service) DeleteWorkout(id string) error {
 	return s.repo.DeleteWorkout(id)

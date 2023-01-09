@@ -10,6 +10,7 @@ import (
 type Workout struct {
 	ID        primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty" `
 	Type      string             `json:"type" bson:"type,omitempty" validate:"required"`
+	UserEmail string             `json:"user_email" bson:"user_email,omitempty" validate:"required,email"`
 	Reps      int                `json:"reps,string" bson:"reps,omitempty" validate:"required"`
 	Load      int                `json:"load,string" bson:"load,omitempty" validate:"required"`
 	CreatedAt time.Time          `json:"created_at" bson:"created_at,omitempty" `

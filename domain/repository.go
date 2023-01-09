@@ -6,7 +6,7 @@ type Repository interface {
 	// Workouts
 	AddWorkout(*Workout) (*Workout, error)
 	GetWorkout(string) (*Workout, error)
-	GetWorkouts() ([]*Workout, error)
+	GetWorkouts(string) ([]*Workout, error)
 	DeleteWorkout(string) error
 	UpdateWorkout(string, *Workout) (*Workout, error)
 
