@@ -138,10 +138,11 @@ form.signup, form.login{
 nav button{
   background: #fff;
   color:var(--primary);
-  boder: 2px solid var(--primary);
+  border: 2px solid var(--primary);
   padding:6px 10px;
   border-radius:4px;
   cursor: pointer;
+  margin-left: 10px;
   font-family: inherit;
 }
 span svg{

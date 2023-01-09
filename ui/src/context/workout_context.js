@@ -12,7 +12,6 @@ export const workoutsReducer = (state, action) => {
         workouts: [action.payload, ...state.workouts]
       }
     case "DELETE_WORKOUT":
-      console.log(action.payload)
       return {
         workouts: state.workouts.filter(wkout => wkout.id !== action.payload.id)
       }

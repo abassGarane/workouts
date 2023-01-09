@@ -16,7 +16,6 @@ const Signup = () => {
       password,
     }
     await signup(user.name, user.email, user.password)
-    console.log(user)
   }
   return (
     <form className='signup' onSubmit={createUser}>

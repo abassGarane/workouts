@@ -4,14 +4,22 @@ import React from "react";
 import en from 'javascript-time-ago/locale/en'
 import { UseWorkoutsContext } from "../hooks/useWorkoutsContext";
 import DeleteIcon from '@mui/icons-material/Delete';
+import { UseAuthContext } from "../hooks/useAuthContect";
 const WorkoutDetails = ({ workout }) => {
+  const { user } = UseAuthContext()
   const { dispatch } = UseWorkoutsContext()
   const handleDelete = async () => {
-    const res = await fetch(`api/${workout.id}`, { method: "DELETE" })
-    if (!res.ok) {
-      console.log(res)
-      alert("unable to delete workout")
+    if (!user) {
+      return
     }
+    const res = await fetch(`api/${workout.id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${user.token}`
+        }
+      })
+
     if (res.ok) {
       dispatch({ type: "DELETE_WORKOUT", payload: workout })
     }

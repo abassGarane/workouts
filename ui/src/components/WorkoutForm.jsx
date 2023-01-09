@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { UseAuthContext } from "../hooks/useAuthContect";
 import { UseWorkoutsContext } from "../hooks/useWorkoutsContext";
 
 const WorkoutForm = () => {
@@ -7,20 +8,25 @@ const WorkoutForm = () => {
   const [load, setLoad] = useState("");
   const [error, setError] = useState(null);
 
+  const { user } = UseAuthContext()
   const { dispatch } = UseWorkoutsContext()
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!user) {
+      setError("Must be logged in!!!")
+      return
+    }
     let workout = {
       type,
       reps,
       load,
     };
-    console.log(JSON.stringify(workout))
     const res = await fetch("http://localhost:4000/api/", {
       method: "POST",
       body: JSON.stringify(workout),
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${user.token}`
       },
     });
     if (!res.ok) {
@@ -30,12 +36,10 @@ const WorkoutForm = () => {
     const json = await res.json();
     if (!res.ok) {
       setError("Unable to create document");
-      console.log(res.body)
     }
     if (res.ok) {
       setError(null);
       dispatch({ type: "CREATE_WORKOUT", payload: json })
-      console.log("New workout created", json);
     }
     setType("");
     setLoad("");
