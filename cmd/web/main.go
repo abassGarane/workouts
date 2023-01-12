@@ -45,7 +45,7 @@ func main() {
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(j.Claim)
 		},
-		SigningKey: []byte("jhkafS8AsrFVSAZXFAAG"),
+		SigningKey: []byte(GetSecret()),
 		ErrorHandler: func(c echo.Context, err error) error {
 			return c.JSON(echo.ErrUnauthorized.Code, echo.Map{
 				"message": "User not authorized :: " + err.Error(),

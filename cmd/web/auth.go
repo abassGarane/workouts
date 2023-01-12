@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/abassGarane/muscles/domain"
@@ -46,11 +47,17 @@ func (a *AuthHandler) login(c echo.Context) error {
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 		},
 	}
-	token := j.CreateSignature(claims, "jhkafS8AsrFVSAZXFAAG")
+	token := j.CreateSignature(claims, GetSecret())
 	return c.JSON(200, echo.Map{
 		"token": token,
 		"user":  user,
 	})
+}
+func GetSecret() string {
+	if os.Getenv("SECRET") == "" {
+		return "djavsxahvxvzaxua"
+	}
+	return os.Getenv("SECRET")
 }
 func (a *AuthHandler) signup(c echo.Context) error {
 	user := &models.UserRequest{}
@@ -85,7 +92,8 @@ func (a *AuthHandler) signup(c echo.Context) error {
 	}
 	fmt.Println("Claims")
 	fmt.Println(claims)
-	token := j.CreateSignature(claims, "the world is a beautiful place")
+	secret := GetSecret()
+	token := j.CreateSignature(claims, secret)
 	fmt.Println(token)
 	return c.JSON(200, echo.Map{
 		"token": token,
