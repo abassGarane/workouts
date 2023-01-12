@@ -64,5 +64,5 @@ func main() {
 	initRouter(service, apiRouter)
 	ui.RegisterHandlers(e)
 
-	go e.Logger.Fatal(e.Start(PORT.(string)))
+	go e.Logger.Fatal(e.Start(PORT))
 }
