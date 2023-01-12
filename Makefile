@@ -5,7 +5,8 @@ ui:
 
 build:
 	@go build -o bin/muscles -ldflags "-w -s" cmd/web/*
-
+build_min:
+	@CGO_ENABLED=0 GOOS=linux go build  -o bin/muscles -ldflags "-w -s" -a -installsuffix cgo cmd/web/*
 run:  build
 	./bin/muscles
 
