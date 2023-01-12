@@ -18,7 +18,7 @@ export const useSignup = () => {
       })
     })
     const json = await res.json()
-    console.log(json)
+
     if (!res.ok) {
       setLoading(false)
       setError(json.message)
