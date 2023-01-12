@@ -6,7 +6,7 @@ func initEnv() map[string]any {
 	var envmap = map[string]any{}
 	var PORT string
 	if os.Getenv("PORT") == "" {
-		PORT = ":4000"
+		PORT = ":8080"
 	} else {
 		PORT = os.Getenv("PORT")
 	}
