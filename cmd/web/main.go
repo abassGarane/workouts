@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/abassGarane/muscles/domain"
 	j "github.com/abassGarane/muscles/pkg/jwt"
 	"github.com/abassGarane/muscles/ui"
@@ -14,10 +17,16 @@ var (
 	service domain.Service
 )
 
+func httpPort() string {
+	if os.Getenv("PORT") == "" {
+		return ":8000"
+	}
+	return fmt.Sprintf(":%s", os.Getenv("PORT"))
+}
 func main() {
-	env := initEnv()
-	PORT := env["PORT"]
 
+	var PORT string
+	PORT = httpPort()
 	repo := initDB()
 	service = domain.Newservice(repo)
 
