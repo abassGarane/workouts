@@ -7,6 +7,6 @@ RUN CGO_ENABLED=0 GOOS=linux go build  -o bin/muscles -ldflags "-w -s" -a -insta
 
 FROM scratch
 COPY --from=0 /go/src/abassGarane/workouts/bin/muscles .
-RUN ["./muscles"]
+CMD ["./muscles"]
 EXPOSE 4000:80
 
